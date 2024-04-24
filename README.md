@@ -1,40 +1,50 @@
 # Spacy-Pipeline-Launcher
 
-Plug-and-play spacy pipeline launcher where you can just write: 
-``` 
-nlp = load_spacy_pipeline("en") 
-```
-and everything works seamlessly, instead of the classical
-```
+The Spacy-Pipeline-Launcher is a plug-and-play solution for launching spaCy pipelines with ease. Instead of the classical method of loading spaCy pipelines like this:
+
+```python
 nlp = spacy.load("en_core_web_sm")
 ```
-a good advantage besides simplicity of loading is that it also automatically takes care of this error and prevents it from occuring:
+
+You can simply write:
+
+```python
+nlp = load_spacy_pipeline("en")
+```
+
+This launcher not only simplifies the loading process but also proactively handles potential errors. For instance, it automatically installs the required pipeline if it's not already available, preventing errors like:
+
 ```
 OSError: [E050] Can't find model 'en_core_web_sm'. It doesn't seem to be a shortcut link, a Python package or a valid path to a data directory.
 ```
-by havin a pro-active attitude and installing the required pipeline:
+
+By executing:
+
 ```
 python -m spacy download en_core_web_sm
 ```
-last but not least, it can be customizable to your own taste with all the parameters spacy is already allowing, but much simpler to modify and setup:
+
+Moreover, the Spacy-Pipeline-Launcher is highly customizable, allowing you to tailor the pipeline to your specific needs. You can specify various parameters such as:
+
+- `lang_code`: The 2-3 letter language code.
+- `pipeline_type`: The type of spaCy pipeline (`sm_pipeline`, `md_pipeline`, `lg_pipeline`, or `"trf"`).
+- `use_transformers`: Set to `True` to load a transformers-based model.
+- `use_smallest_available`: Set to `True` to try loading a small pipeline even if a larger one was requested.
+- `disable`: Specify components to disable in order to reduce computation time and resources.
+- `use_lookup_lemmatizer`: Set to `True` to use a lookup-based lemmatizer for certain languages.
+- `use_senter_over_parser`: Set to `True` for fast sentence segmentation without dependency parses.
+- `use_default_over_trainable`: Replace trainable lemmatizers with default non-trainable ones.
+
+By leveraging these parameters, you can easily configure the spaCy pipeline according to your preferences.
+
+## Usage
+
+To use the Spacy-Pipeline-Launcher, simply import the `load_spacy_pipeline` function and call it with the desired language code and optional parameters:
+
+```python
+from spacy_pipeline_launcher import load_spacy_pipeline
+
+nlp = load_spacy_pipeline("en", pipeline_type="sm", disable=["ner"])
 ```
-:param lang_code: 2-3 letters code languages
-:param pipeline_type: type of spacy pipeline, has to be sm_pipeline, md_pipeline, lg_pipeline or "trf"
-:param use_transformers: if set to True, it will load a transformers based model
-:param use_smallest_available: if set to True, it will try to load a small pipeline, even if md, lg or trf was
-requested
-:param disable: specify components that should be disabled in order to reduce computation time and involved
-resources (can be any of the: ["tok2vec", "tagger", "parser", "attribute_ruler", "lemmatizer", "ner"]
-:param use_lookup_lemmatizer: if set to True, then for Dutch, English, French, Greek, Macedonian, Norwegian and
-Spanish (at least, as of June 2022), then the current lemmatizer (which can be either trainable or rule-based) to
-a lookup-based one
-:param use_senter_over_parser: set it to True if you need fast sentence segmentation without dependency parses,
-(basically what is happening is that you disable the parser use the senter component instead). The senter
-component is ~10× faster than the parser and more accurate than the rule-based sentencizer. Do check that this
-is allowed.
-:param use_default_over_trainable: since v3.3, a number of pipelines use a trainable lemmatizer. You can check
-whether the lemmatizer is trainable. If you’d like to switch to a non-trainable lemmatizer that’s similar to v3.2
-or earlier, you can replace the trainable lemmatizer with the default non-trainable lemmatizer. Do check that this
-is allowed
-:return: spacy pipeline
-```
+
+This will load a small spaCy pipeline for English with the named entity recognition (NER) component disabled.
